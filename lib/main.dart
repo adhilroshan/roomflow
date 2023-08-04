@@ -1,0 +1,82 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:roomflow/screens/home_page.dart';
+import 'package:roomflow/screens/menu_page.dart';
+import 'package:roomflow/screens/zoom_home_page.dart';
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'RoomFlow',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        // primaryColor: const Color(0xff374151),
+        fontFamily: GoogleFonts.robotoFlex().fontFamily,
+        colorSchemeSeed: const Color(0xFFFFBE79),
+      ),
+      // darkTheme: ThemeData(
+      //   useMaterial3: true,
+      //   brightness: Brightness.dark,
+      //   canvasColor: const Color(0xFF374151),
+      //   fontFamily: GoogleFonts.robotoFlex().fontFamily,
+      //   colorSchemeSeed: const Color(0xFFFFBE79),
+      // ),
+      // themeMode: ThemeMode.dark,
+      home: const MyHomePage(),
+    );
+  }
+}
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  late MenuProvider menuController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    menuController = MenuProvider(
+      vsync: this,
+    )..addListener(
+        () => setState(
+          () {},
+        ),
+      );
+  }
+
+  @override
+  void dispose() {
+    menuController.dispose();
+    super.dispose(); 
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => menuController,
+      child: ZoomHomePage(
+        menuScreen: const MenuPage(),
+        contentScreen: Layout(
+          contentBuilder: (cc) => const HomePage(),
+        ),
+      ),
+    );
+  }
+}
