@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:roomflow/models/models.dart';
 import 'package:roomflow/screens/widgets/widgets.dart';
 import 'package:roomflow/space_service.dart';
 import 'package:roomflow/utils/size_config.dart';
@@ -29,9 +30,16 @@ class _RentSpaceState extends State<RentSpace> {
     priceController.dispose();
   }
 
+  List<Space> spaces = [];
+  @override
   @override
   Widget build(BuildContext context) {
     var spacesServices = context.watch<SpaceServices>();
+    for (var i = 0; i < spacesServices.spaces.length; i++) {
+      if (spacesServices.spaces[i].owner == spacesServices.creds.address) {
+        spaces.add(spacesServices.spaces[i]);
+      }
+    }
     SizeConfig().init(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -113,13 +121,14 @@ class _RentSpaceState extends State<RentSpace> {
               : RefreshIndicator(
                   onRefresh: () async {
                     spacesServices.spaces.clear();
+                    spaces.clear();
                     spacesServices.fetchSpaces();
                   },
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        CustomSearchBar(),
-                        YourSpaces(spacesServices: spacesServices)
+                        const CustomSearchBar(),
+                        YourSpaces(spaces: spaces)
                       ],
                     ),
                   ))),

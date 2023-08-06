@@ -85,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         contentScreen: Layout(
           contentBuilder: (cc) {
             var menu = cc.watch<MenuProvider>();
-            print(menu.navigationItem);
             switch (menu.navigationItem) {
               case NavigationItem.home:
                 return const HomePage();

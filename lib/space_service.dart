@@ -45,9 +45,9 @@ class SpaceServices extends ChangeNotifier {
         EthereumAddress.fromHex(jsonABI["networks"]["5777"]["address"]);
   }
 
-  late EthPrivateKey _creds;
+  late EthPrivateKey creds;
   Future<void> getCredentials() async {
-    _creds = EthPrivateKey.fromHex(_privateKey);
+    creds = EthPrivateKey.fromHex(_privateKey);
   }
 
   late DeployedContract _deployedContract;
@@ -137,7 +137,7 @@ class SpaceServices extends ChangeNotifier {
 
     final List<dynamic> result = await web3client
         .call(contract: _deployedContract, function: _getSpaces, params: []);
-    print("\n----\n$result\n----\n");
+    // print("\n----\n$result\n----\n");
 
     for (var spaceData in result[0]) {
       Space space = Space(
@@ -171,7 +171,7 @@ class SpaceServices extends ChangeNotifier {
   ) async {
     print("\n----\nCalling create Space Function\n----\n");
 
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _createSpace.encodeCall([
@@ -191,7 +191,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-        _creds, transaction,
+        creds, transaction,
         chainId: chainId); // Adjust the chainId if necessary
 
     final response = await web3client.sendRawTransaction(signedTransaction);
@@ -240,7 +240,7 @@ class SpaceServices extends ChangeNotifier {
   ) async {
     print("\n----\nCalling update Space Function\n----\n");
 
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _updateSpace.encodeCall([
@@ -261,7 +261,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-        _creds, transaction,
+        creds, transaction,
         chainId: chainId); // Adjust the chainId if necessary
 
     final response = await web3client.sendRawTransaction(signedTransaction);
@@ -278,7 +278,7 @@ class SpaceServices extends ChangeNotifier {
   ) async {
     print("\n----\nCalling delete Space Function\n----\n");
 
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _deleteSpace.encodeCall([
@@ -294,7 +294,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-        _creds, transaction,
+        creds, transaction,
         chainId: chainId); // Adjust the chainId if necessary
 
     final response = await web3client.sendRawTransaction(signedTransaction);
@@ -336,7 +336,7 @@ class SpaceServices extends ChangeNotifier {
 
   Future<void> bookSpace(
       BigInt spaceId, BigInt startDate, BigInt endDate) async {
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _bookSpace.encodeCall([
@@ -354,7 +354,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-      _creds,
+      creds,
       transaction,
       chainId: chainId, // Adjust the chainId if necessary
     );
@@ -366,7 +366,7 @@ class SpaceServices extends ChangeNotifier {
   }
 
   Future<void> checkInSpace(BigInt spaceId, BigInt bookingId) async {
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _checkInSpace.encodeCall([
@@ -383,7 +383,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-      _creds,
+      creds,
       transaction,
       chainId: chainId, // Adjust the chainId if necessary
     );
@@ -395,7 +395,7 @@ class SpaceServices extends ChangeNotifier {
   }
 
   Future<void> claimFunds(BigInt spaceId, BigInt bookingId) async {
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _claimFunds.encodeCall([
@@ -412,7 +412,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-      _creds,
+      creds,
       transaction,
       chainId: chainId, // Adjust the chainId if necessary
     );
@@ -424,7 +424,7 @@ class SpaceServices extends ChangeNotifier {
   }
 
   Future<void> refundBooking(BigInt spaceId, BigInt bookingId, BigInt date) async {
-    final senderAddress = _creds.address;
+    final senderAddress = creds.address;
     final nonce = await web3client.getTransactionCount(senderAddress);
 
     final functionCall = _refundBooking.encodeCall([
@@ -442,7 +442,7 @@ class SpaceServices extends ChangeNotifier {
     );
 
     final signedTransaction = await web3client.signTransaction(
-      _creds,
+      creds,
       transaction,
       chainId: chainId,
     );
