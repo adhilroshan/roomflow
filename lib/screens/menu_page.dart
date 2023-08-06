@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:roomflow/app_styles.dart';
-import 'package:roomflow/size_config.dart';
+import 'package:roomflow/utils/app_styles.dart';
+import 'package:roomflow/utils/size_config.dart';
 import 'package:roomflow/screens/zoom_home_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -50,9 +50,9 @@ class MenuPage extends StatelessWidget {
             ),
             buildMenuItem(
               context,
-              item: NavigationItem.nearby,
-              text: 'Nearby',
-              icon: 'assets/icon_nearby',
+              item: NavigationItem.rentSpace,
+              text: 'Rent Space',
+              icon: 'assets/icon_rent_space',
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical! * 2,
@@ -137,7 +137,7 @@ Widget buildMenuItem(
   final currentItem = provider.navigationItem;
   final isSelected = item == currentItem;
 
-  final color = isSelected ? kBlue : kWhite;
+  final color = isSelected ? kDarkBlue : kWhite;
   final iconSvg = isSelected ? '${icon}_enable.svg' : '${icon}_disable.svg';
 
   SizeConfig().init(context);
@@ -170,7 +170,7 @@ Widget buildMenuItem(
             ),
             Text(
               text,
-              style: kRalewayRegular.copyWith(
+              style: kRalewayMedium.copyWith(
                 color: color,
                 fontSize: SizeConfig.blockSizeHorizontal! * 4,
               ),
@@ -193,6 +193,7 @@ void selectItem(BuildContext context, NavigationItem item) {
 enum NavigationItem {
   home,
   profile,
+  rentSpace,
   nearby,
   bookmark,
   notification,

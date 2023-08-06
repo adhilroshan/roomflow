@@ -3,11 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:roomflow/demo.dart';
 import 'package:roomflow/screens/home_page.dart';
 import 'package:roomflow/screens/menu_page.dart';
+import 'package:roomflow/screens/rent_space/rent_space_page.dart';
 import 'package:roomflow/screens/zoom_home_page.dart';
+import 'package:roomflow/space_service.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => SpaceServices(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,10 +41,12 @@ class MyApp extends StatelessWidget {
       //   colorSchemeSeed: const Color(0xFFFFBE79),
       // ),
       // themeMode: ThemeMode.dark,
-      home: const MyHomePage(),
+      // home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -64,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     menuController.dispose();
-    super.dispose(); 
+    super.dispose();
   }
 
   @override
@@ -74,7 +83,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       child: ZoomHomePage(
         menuScreen: const MenuPage(),
         contentScreen: Layout(
-          contentBuilder: (cc) => const HomePage(),
+          contentBuilder: (cc) {
+            var menu = cc.watch<MenuProvider>();
+            print(menu.navigationItem);
+            switch (menu.navigationItem) {
+              case NavigationItem.home:
+                return const HomePage();
+              case NavigationItem.bookmark:
+                return const Demo();
+              case NavigationItem.rentSpace:
+                return const RentSpace();
+              default:
+                return const HomePage();
+            }
+          },
         ),
       ),
     );

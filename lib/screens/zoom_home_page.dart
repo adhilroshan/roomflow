@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:roomflow/app_styles.dart';
+import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/screens/menu_page.dart';
-import 'package:roomflow/size_config.dart';
+import 'package:roomflow/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
 class ZoomHomePage extends StatefulWidget {
@@ -24,6 +24,8 @@ class _ZoomHomePageState extends State<ZoomHomePage>
   Curve scaleUpCurve = const Interval(0.0, 1.0, curve: Curves.easeOut);
   Curve slideOutCurve = const Interval(0.0, 1.0, curve: Curves.easeOut);
   Curve slideInCurve = const Interval(0.0, 1.0, curve: Curves.easeOut);
+
+  
 
   createContentDisplay() {
     return zoomAndSlideContent(

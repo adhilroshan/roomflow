@@ -7,19 +7,46 @@ import 'package:roomflow/utils/size_config.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
 
-class ProductDetailPage extends StatelessWidget {
-  const ProductDetailPage({
+class SpaceDetailPage extends StatefulWidget {
+  SpaceDetailPage({
     Key? key,
     required this.spaceId,
   }) : super(key: key);
   final int spaceId;
 
   @override
+  State<SpaceDetailPage> createState() => _SpaceDetailPageState();
+}
+
+class _SpaceDetailPageState extends State<SpaceDetailPage> {
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController imgUrlController = TextEditingController();
+  final TextEditingController roomsController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    titleController.dispose();
+    descriptionController.dispose();
+    imgUrlController.dispose();
+    roomsController.dispose();
+    priceController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     var spacesServices = context.watch<SpaceServices>();
-    Space space = spacesServices.spaces[spaceId];
-    var images = spacesServices.spaces[spaceId].images.split(',');
+    Space space = spacesServices.spaces[widget.spaceId];
+    var images = space.images.split(',');
+
+    titleController.text = space.name;
+    descriptionController.text = space.description;
+    imgUrlController.text = space.images;
+    roomsController.text = space.rooms.toString();
+    priceController.text = space.price.toString();
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -34,34 +61,100 @@ class ProductDetailPage extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Price',
-                    style: kRalewayRegular.copyWith(
-                      color: kGrey85,
-                      fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
-                    ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical! * 0.5,
-                  ),
-                  Text(
-                    '${space.price} / Day',
-                    style: kRalewayMedium.copyWith(
-                      color: kBlack,
-                      fontSize: SizeConfig.blockSizeHorizontal! * 4,
-                    ),
-                  )
+                  // Text(
+                  //   'Price',
+                  //   style: kRalewayRegular.copyWith(
+                  //     color: kGrey85,
+                  //     fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: SizeConfig.blockSizeVertical! * 0.5,
+                  // ),
+                  // Text(
+                  //   '${space.price} / Day',
+                  //   style: kRalewayMedium.copyWith(
+                  //     color: kBlack,
+                  //     fontSize: SizeConfig.blockSizeHorizontal! * 4,
+                  //   ),
+                  // )
                 ],
               ),
             ),
             GestureDetector(
               onTap: () {
-                debugPrint('Rent Now Tapped');
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Edit Space'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: titleController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter name',
+                            ),
+                          ),
+                          TextField(
+                            controller: descriptionController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter description',
+                            ),
+                            enableSuggestions: true,
+                          ),
+                          TextField(
+                            controller: imgUrlController,
+                            decoration: const InputDecoration(
+                              hintText:
+                                  'Enter the URLs of the images separated by commas(,)',
+                            ),
+                            // expands: true,
+                            maxLines: 3,
+                            keyboardType: TextInputType.multiline,
+                          ),
+                          TextField(
+                            controller: roomsController,
+                            decoration: const InputDecoration(
+                              hintText:
+                                  'Enter the number of rooms available at your Space',
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                          TextField(
+                            controller: priceController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter the Price of your space',
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context, true);
+                            spacesServices.updateSpace(
+                                space.id,
+                                titleController.text,
+                                descriptionController.text,
+                                imgUrlController.text,
+                                BigInt.parse(roomsController.text),
+                                BigInt.parse(priceController.text));
+                          },
+                          child: const Text('Update'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               child: Container(
                 height: 43,
@@ -76,7 +169,7 @@ class ProductDetailPage extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Rent Now',
+                    'Edit Space',
                     style: kRalewaySemibold.copyWith(
                       color: kWhite,
                       fontSize: SizeConfig.blockSizeHorizontal! * 4,
@@ -92,6 +185,7 @@ class ProductDetailPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: kPadding20,
+            vertical: kPadding20,
           ),
           child: Column(
             children: [
@@ -151,11 +245,47 @@ class ProductDetailPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              CircleAvatar(
-                                radius: 17,
-                                backgroundColor: kBlack.withOpacity(0.24),
-                                child: SvgPicture.asset(
-                                  'assets/icon_bookmark.svg',
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext ctx) {
+                                        return AlertDialog(
+                                          title: const Text('Please Confirm'),
+                                          content: const Text(
+                                              'Are you sure to remove this space?'),
+                                          actions: [
+                                            // The "Yes" button
+                                            TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  Navigator.pop(context, true);
+                                                  spacesServices
+                                                      .deleteSpace(space.id)
+                                                      .onError((error,
+                                                              stackTrace) =>
+                                                          print(
+                                                              "$error $stackTrace"));
+
+                                                  // Close the dialog
+                                                },
+                                                child: const Text('Yes')),
+                                            TextButton(
+                                                onPressed: () {
+                                                  // Close the dialog
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('No'))
+                                          ],
+                                        );
+                                      });
+                                },
+                                child: CircleAvatar(
+                                  radius: 17,
+                                  backgroundColor: kBlack.withOpacity(0.24),
+                                  child: SvgPicture.asset(
+                                    'assets/icon_delete.svg',
+                                  ),
                                 ),
                               ),
                             ],

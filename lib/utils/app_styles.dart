@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 /* Start of Color Constants */
 
-const Color kWhite = Color(0xffffffff);
+const Color kWhite = Color(0xfffff2e4);
 const Color kWhiteF7 = Color(0xfff7f7f7);
 const Color kWhiteFA = Color(0xffFAFAFA);
 const Color kWhiteEF = Color(0xffEFEFEF);
@@ -20,6 +20,7 @@ const Color kGrey85 = Color(0xff858585);
 // const Color kBlue = Color(0xff0A8ED9);
 const Color kLightBlue = Color(0xff374151);
 const Color kBlue = Color(0xffFFBE79);
+const Color kDarkBlue = Color(0xffb38555);
 // const Color kLightBlue = Color(0xffA0DAFB);
 
 /* End of Color Constants */
@@ -43,7 +44,7 @@ const Gradient kLinearGradientBlue = LinearGradient(
   end: Alignment.bottomRight,
   colors: <Color>[
     kBlue,
-    kLightBlue,
+    kDarkBlue,
   ],
   tileMode: TileMode.clamp,
 );
@@ -52,8 +53,8 @@ Gradient kLinearGradientWhite = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
   colors: <Color>[
-    kWhite.withOpacity(0),
     kWhite,
+    kWhite.withOpacity(0),
   ],
   tileMode: TileMode.clamp,
 );
