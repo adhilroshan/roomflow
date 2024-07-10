@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roomflow/models/models.dart';
-import 'package:roomflow/space_service.dart';
+import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/utils/size_config.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
 
 class SpaceDetailPage extends StatefulWidget {
-  SpaceDetailPage({
+  const SpaceDetailPage({
     Key? key,
     required this.spaceId,
+    required this.spaces,
   }) : super(key: key);
   final int spaceId;
+  final List<Space> spaces;
 
   @override
   State<SpaceDetailPage> createState() => _SpaceDetailPageState();
@@ -20,6 +22,7 @@ class SpaceDetailPage extends StatefulWidget {
 
 class _SpaceDetailPageState extends State<SpaceDetailPage> {
   final TextEditingController titleController = TextEditingController();
+  final TextEditingController subtitleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imgUrlController = TextEditingController();
   final TextEditingController roomsController = TextEditingController();
@@ -29,6 +32,7 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
   void dispose() {
     super.dispose();
     titleController.dispose();
+    subtitleController.dispose();
     descriptionController.dispose();
     imgUrlController.dispose();
     roomsController.dispose();
@@ -39,10 +43,20 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     var spacesServices = context.watch<SpaceServices>();
-    Space space = spacesServices.spaces[widget.spaceId];
+    Space space = widget.spaces[widget.spaceId];
     var images = space.images.split(',');
+    List<Booking> bookingsList = [];
+    Future<List<Booking>> bookings =
+        spacesServices.getBookings(BigInt.from(widget.spaceId));
+    bookings.then((bookings) {
+      for (Booking booking in bookings) {
+        bookingsList.add(booking);
+      }
+    });
+    print(bookingsList);
 
-    titleController.text = space.name;
+    titleController.text = space.title;
+    subtitleController.text = space.subtitle;
     descriptionController.text = space.description;
     imgUrlController.text = space.images;
     roomsController.text = space.rooms.toString();
@@ -99,7 +113,13 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                           TextField(
                             controller: titleController,
                             decoration: const InputDecoration(
-                              hintText: 'Enter name',
+                              hintText: 'Enter title',
+                            ),
+                          ),
+                          TextField(
+                            controller: subtitleController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter subtitle',
                             ),
                           ),
                           TextField(
@@ -130,7 +150,7 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                           TextField(
                             controller: priceController,
                             decoration: const InputDecoration(
-                              hintText: 'Enter the Price of your space',
+                              hintText: 'Enter the Price of your space in wei',
                             ),
                             keyboardType: TextInputType.number,
                           ),
@@ -138,12 +158,13 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             Navigator.pop(context);
                             Navigator.pop(context, true);
-                            spacesServices.updateSpace(
+                            await spacesServices.updateSpace(
                                 space.id,
                                 titleController.text,
+                                subtitleController.text,
                                 descriptionController.text,
                                 imgUrlController.text,
                                 BigInt.parse(roomsController.text),
@@ -257,10 +278,10 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                                           actions: [
                                             // The "Yes" button
                                             TextButton(
-                                                onPressed: () {
+                                                onPressed: () async {
                                                   Navigator.of(context).pop();
                                                   Navigator.pop(context, true);
-                                                  spacesServices
+                                                  await spacesServices
                                                       .deleteSpace(space.id)
                                                       .onError((error,
                                                               stackTrace) =>
@@ -294,7 +315,7 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                space.name,
+                                space.title,
                                 style: kRalewaySemibold.copyWith(
                                   color: kWhite,
                                   fontSize:
@@ -305,7 +326,7 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                                 height: SizeConfig.blockSizeVertical! * 0.5,
                               ),
                               Text(
-                                space.description,
+                                space.subtitle,
                                 style: kRalewayRegular.copyWith(
                                   color: kWhite,
                                   fontSize: SizeConfig.blockSizeHorizontal! * 3,
@@ -439,83 +460,9 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
                 height: kPadding24,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(
-                          'https://cdn.iconscout.com/icon/free/png-256/free-avatar-370-456322.png?f=webp',
-                        ),
-                        backgroundColor: kBlue,
-                      ),
-                      SizedBox(
-                        width: SizeConfig.blockSizeHorizontal! * 4,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${space.owner.toString().substring(0, 12)}...${space.owner.toString().substring(space.owner.toString().length - 12, space.owner.toString().length)}",
-                            style: kRalewayMedium.copyWith(
-                              color: kBlack,
-                              fontSize: SizeConfig.blockSizeHorizontal! * 4,
-                              overflow: TextOverflow.clip,
-                            ),
-                          ),
-                          SizedBox(
-                            height: SizeConfig.blockSizeVertical! * 0.2,
-                          ),
-                          Text(
-                            'Owner',
-                            style: kRalewayMedium.copyWith(
-                              color: kGrey85,
-                              fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        height: 28,
-                        width: 28,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(kBorderRadius5),
-                          color: kBlue.withOpacity(0.5),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/icon_phone.svg',
-                        ),
-                      ),
-                      SizedBox(
-                        width: SizeConfig.blockSizeHorizontal! * 4,
-                      ),
-                      Container(
-                        height: 28,
-                        width: 28,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(kBorderRadius5),
-                          color: kBlue.withOpacity(0.5),
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/icon_message.svg',
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: kPadding24,
-              ),
-              Row(
                 children: [
                   Text(
-                    'Gallery',
+                    'Bookings',
                     style: kRalewayMedium.copyWith(
                       color: kBlack,
                       fontSize: SizeConfig.blockSizeHorizontal! * 4,
@@ -526,80 +473,180 @@ class _SpaceDetailPageState extends State<SpaceDetailPage> {
               const SizedBox(
                 height: kPadding24,
               ),
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: kPadding16,
-                  childAspectRatio: 1,
-                ),
-                itemCount: images.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(kBorderRadius10),
-                      color: kBlue,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          images[index],
-                        ),
+              bookingsList.isEmpty
+                  ? Text(
+                      "No bookings",
+                      style: kRalewayRegular.copyWith(
+                        color: kGrey85,
+                        fontSize: SizeConfig.blockSizeHorizontal! * 3,
                       ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: index == 4 - 1 ? kBlack.withOpacity(0.3) : null,
-                        borderRadius: BorderRadius.circular(kBorderRadius10),
-                      ),
-                      child: Center(
-                        child: index == 4 - 1
-                            ? Text(
-                                '+5',
-                                style: kRalewayMedium.copyWith(
-                                  color: kWhite,
-                                  fontSize: SizeConfig.blockSizeHorizontal! * 5,
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(
+                                'https://cdn.iconscout.com/icon/free/png-256/free-avatar-370-456322.png?f=webp',
+                              ),
+                              backgroundColor: kBlue,
+                            ),
+                            SizedBox(
+                              width: SizeConfig.blockSizeHorizontal! * 4,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${space.owner.toString().substring(0, 12)}...${space.owner.toString().substring(space.owner.toString().length - 12, space.owner.toString().length)}",
+                                  style: kRalewayMedium.copyWith(
+                                    color: kBlack,
+                                    fontSize:
+                                        SizeConfig.blockSizeHorizontal! * 4,
+                                    overflow: TextOverflow.clip,
+                                  ),
                                 ),
-                              )
-                            : null,
-                      ),
+                                SizedBox(
+                                  height: SizeConfig.blockSizeVertical! * 0.2,
+                                ),
+                                Text(
+                                  '24-10-23 10:00 ',
+                                  style: kRalewayMedium.copyWith(
+                                    color: kGrey85,
+                                    fontSize:
+                                        SizeConfig.blockSizeHorizontal! * 2.5,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              height: 28,
+                              width: 28,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(kBorderRadius5),
+                                color: kBlue.withOpacity(0.5),
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/icon_phone.svg',
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.blockSizeHorizontal! * 4,
+                            ),
+                            Container(
+                              height: 28,
+                              width: 28,
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(kBorderRadius5),
+                                color: kBlue.withOpacity(0.5),
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/icon_message.svg',
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  );
-                },
-              ),
               const SizedBox(
                 height: kPadding24,
               ),
-              Container(
-                height: 161,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(kBorderRadius20),
-                  image: const DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage(
-                      'assets/map_sample.png',
-                    ),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        height: 136,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(kBorderRadius20),
-                            bottomRight: Radius.circular(kBorderRadius20),
-                          ),
-                          gradient: kLinearGradientWhite,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Row(
+              //   children: [
+              //     Text(
+              //       'Gallery',
+              //       style: kRalewayMedium.copyWith(
+              //         color: kBlack,
+              //         fontSize: SizeConfig.blockSizeHorizontal! * 4,
+              //       ),
+              //     )
+              //   ],
+              // ),
+              // const SizedBox(
+              //   height: kPadding24,
+              // ),
+              // GridView.builder(
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   padding: EdgeInsets.zero,
+              //   shrinkWrap: true,
+              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //     crossAxisCount: 4,
+              //     crossAxisSpacing: kPadding16,
+              //     childAspectRatio: 1,
+              //   ),
+              //   itemCount: images.length,
+              //   itemBuilder: (BuildContext context, int index) {
+              //     return Container(
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(kBorderRadius10),
+              //         color: kBlue,
+              //         image: DecorationImage(
+              //           fit: BoxFit.cover,
+              //           image: NetworkImage(
+              //             images[index],
+              //           ),
+              //         ),
+              //       ),
+              //       child: Container(
+              //         decoration: BoxDecoration(
+              //           color: index == 4 - 1 ? kBlack.withOpacity(0.3) : null,
+              //           borderRadius: BorderRadius.circular(kBorderRadius10),
+              //         ),
+              //         child: Center(
+              //           child: index == 4 - 1
+              //               ? Text(
+              //                   '+5',
+              //                   style: kRalewayMedium.copyWith(
+              //                     color: kWhite,
+              //                     fontSize: SizeConfig.blockSizeHorizontal! * 5,
+              //                   ),
+              //                 )
+              //               : null,
+              //         ),
+              //       ),
+              //     );
+              //   },
+              // ),
+              // const SizedBox(
+              //   height: kPadding24,
+              // ),
+              // Container(
+              //   height: 161,
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(kBorderRadius20),
+              //     image: const DecorationImage(
+              //       fit: BoxFit.cover,
+              //       image: AssetImage(
+              //         'assets/map_sample.png',
+              //       ),
+              //     ),
+              //   ),
+              //   child: Stack(
+              //     children: [
+              //       Align(
+              //         alignment: Alignment.bottomCenter,
+              //         child: Container(
+              //           height: 136,
+              //           decoration: BoxDecoration(
+              //             borderRadius: const BorderRadius.only(
+              //               bottomLeft: Radius.circular(kBorderRadius20),
+              //               bottomRight: Radius.circular(kBorderRadius20),
+              //             ),
+              //             gradient: kLinearGradientWhite,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(
                 height: kPadding24,
               ),

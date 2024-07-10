@@ -27,6 +27,9 @@ class MenuPage extends StatelessWidget {
           right: SizeConfig.screenWidth! / 2,
         ),
         color: kBlue,
+        // decoration: BoxDecoration(
+        //   gradient: kLinearGradient,
+        // ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -41,8 +44,8 @@ class MenuPage extends StatelessWidget {
             ),
             buildMenuItem(
               context,
-              item: NavigationItem.profile,
-              text: 'Profile',
+              item: NavigationItem.booking,
+              text: 'Bookings',
               icon: 'assets/icon_profile',
             ),
             SizedBox(
@@ -51,7 +54,7 @@ class MenuPage extends StatelessWidget {
             buildMenuItem(
               context,
               item: NavigationItem.rentSpace,
-              text: 'Rent Space',
+              text: 'Host Space',
               icon: 'assets/icon_rent_space',
             ),
             SizedBox(
@@ -74,9 +77,9 @@ class MenuPage extends StatelessWidget {
             ),
             buildMenuItem(
               context,
-              item: NavigationItem.notification,
-              text: 'Notification',
-              icon: 'assets/icon_notification_has_notif',
+              item: NavigationItem.profile,
+              text: 'Profile',
+              icon: 'assets/icon_profile',
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical! * 2,
@@ -194,6 +197,7 @@ enum NavigationItem {
   home,
   profile,
   rentSpace,
+  booking,
   nearby,
   bookmark,
   notification,

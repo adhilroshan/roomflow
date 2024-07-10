@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:roomflow/space_service.dart';
+import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/utils/size_config.dart';
 import 'package:roomflow/screens/product_detail_page.dart';
@@ -155,7 +155,7 @@ class NearFromYou extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    spacesServices.spaces[index].name,
+                                    spacesServices.spaces[index].title,
                                     style: kRalewayMedium.copyWith(
                                       color: kWhite,
                                       fontSize:
@@ -166,7 +166,7 @@ class NearFromYou extends StatelessWidget {
                                     height: SizeConfig.blockSizeVertical! * 0.5,
                                   ),
                                   Text(
-                                    spacesServices.spaces[index].description,
+                                    spacesServices.spaces[index].subtitle,
                                     style: kRalewayRegular.copyWith(
                                       color: kWhite,
                                       fontSize:

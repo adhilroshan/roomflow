@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:roomflow/services/space_service.dart';
+import 'package:roomflow/models/models.dart';
 import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/utils/size_config.dart';
 // import 'package:roomflow/screens/product_detail_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class BestForYou extends StatelessWidget {
-  const BestForYou({
+class BookedSpaces extends StatefulWidget {
+  const BookedSpaces({
     super.key,
-    required this.spacesServices,
+    required this.spaces,
   });
 
-  final SpaceServices spacesServices;
+  final List<Space> spaces;
+
+  @override
+  State<BookedSpaces> createState() => _BookedSpacesState();
+}
+
+class _BookedSpacesState extends State<BookedSpaces> {
+  String check = "Check In";
+  checkIn() {
+    setState(() {
+      check = "Checked In";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,19 +40,19 @@ class BestForYou extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Best for you',
+                'Booked Spaces',
                 style: kRalewayMedium.copyWith(
                   color: kBlack,
                   fontSize: SizeConfig.blockSizeHorizontal! * 4,
                 ),
               ),
-              Text(
-                'See more',
-                style: kRalewayRegular.copyWith(
-                  color: kGrey85,
-                  fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
-                ),
-              ),
+              // Text(
+              //   'See more',
+              //   style: kRalewayRegular.copyWith(
+              //     color: kGrey85,
+              //     fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -54,9 +66,15 @@ class BestForYou extends StatelessWidget {
           child: ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: spacesServices.spaces.length,
+            itemCount: widget.spaces.length,
             itemBuilder: (context, index) {
-              var images = spacesServices.spaces[index].images.split(',');
+              var images = widget.spaces[index].images.split(',');
+              String check = "Check In";
+              checkIn() {
+                setState(() {
+                  check = "Checked In";
+                });
+              }
 
               return Container(
                 height: 70,
@@ -95,7 +113,7 @@ class BestForYou extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            spacesServices.spaces[index].title,
+                            widget.spaces[index].title,
                             style: kRalewayMedium.copyWith(
                               color: kBlack,
                               fontSize: SizeConfig.blockSizeHorizontal! * 4,
@@ -105,7 +123,7 @@ class BestForYou extends StatelessWidget {
                             height: SizeConfig.blockSizeVertical! * 0.5,
                           ),
                           Text(
-                            '${spacesServices.spaces[index].price} WEI / Day',
+                            '${widget.spaces[index].price} WEI / Day',
                             style: kRalewayRegular.copyWith(
                               color: Colors.yellow[900],
                               fontSize: SizeConfig.blockSizeHorizontal! * 2.5,
@@ -124,7 +142,7 @@ class BestForYou extends StatelessWidget {
                                           SizeConfig.blockSizeHorizontal! * 0.5,
                                     ),
                                     Text(
-                                      '${spacesServices.spaces[index].rooms} Bedroom',
+                                      '${widget.spaces[index].rooms} Bedroom',
                                       style: kRalewayRegular.copyWith(
                                         color: kGrey85,
                                         fontSize:
@@ -163,6 +181,7 @@ class BestForYou extends StatelessWidget {
                         ],
                       ),
                     ),
+                    ElevatedButton(onPressed: checkIn, child: Text(check))
                   ],
                 ),
               );

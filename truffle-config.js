@@ -41,10 +41,10 @@
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
 
-// require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
+require('dotenv').config();
+const { MUMBAI_RPC_URL, PRIVATE_KEY, ETHERSCAN_API_KEY, GOERLI_RPC_URL } = process.env;
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   /**
@@ -57,6 +57,14 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: ETHERSCAN_API_KEY,
+  },
+
+
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -65,10 +73,28 @@ module.exports = {
     // options below to some value.
     //
     development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 7545,            // Standard Ethereum port (default: none)
-     network_id: "*",       // Any network (default: none)
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
       // gas: 8000000, 
+    },
+
+
+    polygonmumbai: {
+      provider: function () {
+        return new HDWalletProvider(PRIVATE_KEY, MUMBAI_RPC_URL);
+      },
+      network_id: '80001',
+    },
+
+
+    goerli: {
+      provider: () => new HDWalletProvider(PRIVATE_KEY, GOERLI_RPC_URL),
+      network_id: 5, //Goerli's id
+      gas: 5000000, //gas limit
+      confirmations: 1,    // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     },
     //
     // An additional network, but with some advanced options…
@@ -114,11 +140,11 @@ module.exports = {
       version: "0.8.0",      // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       settings: {          // See the solidity docs for advice about optimization and evmVersion
-       optimizer: {
-         enabled: true,
-         runs: 200
-       },
-      //  evmVersion: "byzantium"
+        optimizer: {
+          enabled: true,
+          runs: 200
+        },
+        //  evmVersion: "byzantium"
       }
     }
   },
@@ -135,12 +161,12 @@ module.exports = {
   //
   db: {
     enabled: false,
-  //   host: "127.0.0.1",
-  //   adapter: {
-  //     name: "indexeddb",
-  //     settings: {
-  //       directory: ".db"
-  //     }
-  //   }
+    //   host: "127.0.0.1",
+    //   adapter: {
+    //     name: "indexeddb",
+    //     settings: {
+    //       directory: ".db"
+    //     }
+    //   }
   }
 };

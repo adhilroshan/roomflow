@@ -2,7 +2,8 @@ import 'package:web3dart/web3dart.dart';
 
 class Space {
   final BigInt id;
-  final String name;
+  final String title;
+  final String subtitle;
   final String description;
   final String images;
   final BigInt rooms;
@@ -15,7 +16,8 @@ class Space {
 
   Space({
     required this.id,
-    required this.name,
+    required this.title,
+    required this.subtitle,
     required this.description,
     required this.images,
     required this.rooms,

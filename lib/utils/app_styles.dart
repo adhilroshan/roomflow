@@ -48,13 +48,23 @@ const Gradient kLinearGradientBlue = LinearGradient(
   ],
   tileMode: TileMode.clamp,
 );
+const Gradient kLinearGradient = LinearGradient(
+  begin: Alignment.centerLeft,
+  end: Alignment.centerRight,
+  colors: <Color>[
+    kBlue,
+    kDarkBlue,
+    // kLightBlue,
+  ],
+  tileMode: TileMode.decal,
+);
 
 Gradient kLinearGradientWhite = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
   colors: <Color>[
-    kWhite,
     kWhite.withOpacity(0),
+    kWhite,
   ],
   tileMode: TileMode.clamp,
 );

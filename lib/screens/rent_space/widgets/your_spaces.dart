@@ -57,13 +57,13 @@ class YourSpaces extends StatelessWidget {
                 itemBuilder: (context, index) {
                   var images = spaces[index].images.split(',');
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 8),
                     child: GestureDetector(
                       onTap: (() => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  SpaceDetailPage(spaceId: index),
+                                  SpaceDetailPage(spaceId: index,spaces:spaces),
                             ),
                           )),
                       child: Container(
@@ -164,7 +164,7 @@ class YourSpaces extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          spaces[index].name,
+                                          spaces[index].title,
                                           style: kRalewayMedium.copyWith(
                                             color: kWhite,
                                             fontSize: SizeConfig
@@ -178,7 +178,7 @@ class YourSpaces extends StatelessWidget {
                                                   0.5,
                                         ),
                                         Text(
-                                          spaces[index].description,
+                                          spaces[index].subtitle,
                                           style: kRalewayRegular.copyWith(
                                             color: kWhite,
                                             fontSize: SizeConfig

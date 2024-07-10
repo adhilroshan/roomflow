@@ -25,15 +25,15 @@ class _ZoomHomePageState extends State<ZoomHomePage>
   Curve slideOutCurve = const Interval(0.0, 1.0, curve: Curves.easeOut);
   Curve slideInCurve = const Interval(0.0, 1.0, curve: Curves.easeOut);
 
-  
-
   createContentDisplay() {
     return zoomAndSlideContent(
       Scaffold(
         backgroundColor: Colors.transparent,
         body: GestureDetector(
           onPanUpdate: (details) {
-            if (details.delta.dx < 3) {
+            double verticalDelta = details.delta.dy.abs();
+            double horizontalDelta = details.delta.dx.abs();
+            if (horizontalDelta > verticalDelta && horizontalDelta > 10) {
               Provider.of<MenuProvider>(context, listen: false).toggle();
             }
           },

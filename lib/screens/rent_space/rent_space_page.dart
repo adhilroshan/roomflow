@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roomflow/models/models.dart';
 import 'package:roomflow/screens/widgets/widgets.dart';
-import 'package:roomflow/space_service.dart';
+import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/size_config.dart';
 import 'widgets/widgets.dart';
 
@@ -15,6 +15,7 @@ class RentSpace extends StatefulWidget {
 
 class _RentSpaceState extends State<RentSpace> {
   final TextEditingController titleController = TextEditingController();
+  final TextEditingController subtitleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imgUrlController = TextEditingController();
   final TextEditingController roomsController = TextEditingController();
@@ -24,16 +25,16 @@ class _RentSpaceState extends State<RentSpace> {
   void dispose() {
     super.dispose();
     titleController.dispose();
+    subtitleController.dispose();
     descriptionController.dispose();
     imgUrlController.dispose();
     roomsController.dispose();
     priceController.dispose();
   }
 
-  List<Space> spaces = [];
-  @override
   @override
   Widget build(BuildContext context) {
+    List<Space> spaces = [];
     var spacesServices = context.watch<SpaceServices>();
     for (var i = 0; i < spacesServices.spaces.length; i++) {
       if (spacesServices.spaces[i].owner == spacesServices.creds.address) {
@@ -55,7 +56,13 @@ class _RentSpaceState extends State<RentSpace> {
                     TextField(
                       controller: titleController,
                       decoration: const InputDecoration(
-                        hintText: 'Enter name',
+                        hintText: 'Enter title',
+                      ),
+                    ),
+                    TextField(
+                      controller: subtitleController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter subtitle',
                       ),
                     ),
                     TextField(
@@ -66,7 +73,7 @@ class _RentSpaceState extends State<RentSpace> {
                       enableSuggestions: true,
                     ),
                     TextField(
-                      controller: imgUrlController,
+                      controller: imgUrlController, 
                       decoration: const InputDecoration(
                         hintText:
                             'Enter the URLs of the images separated by commas(,)',
@@ -86,7 +93,7 @@ class _RentSpaceState extends State<RentSpace> {
                     TextField(
                       controller: priceController,
                       decoration: const InputDecoration(
-                        hintText: 'Enter the Price of your space',
+                        hintText: 'Enter the Price of your space in wei',
                       ),
                       keyboardType: TextInputType.number,
                     ),
@@ -97,6 +104,7 @@ class _RentSpaceState extends State<RentSpace> {
                     onPressed: () {
                       spacesServices.createSpace(
                           titleController.text,
+                          subtitleController.text,
                           descriptionController.text,
                           imgUrlController.text,
                           BigInt.parse(roomsController.text),
@@ -114,24 +122,28 @@ class _RentSpaceState extends State<RentSpace> {
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
-          child: spacesServices.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : RefreshIndicator(
-                  onRefresh: () async {
-                    spacesServices.spaces.clear();
-                    spaces.clear();
-                    spacesServices.fetchSpaces();
-                  },
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const CustomSearchBar(),
-                        YourSpaces(spaces: spaces)
-                      ],
-                    ),
-                  ))),
+        child: spacesServices.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: () async {
+                  spacesServices.spaces.clear();
+                  spaces.clear();
+                  spacesServices.fetchSpaces();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      const CustomSearchBar(),
+                      YourSpaces(spaces: spaces)
+                    ],
+                  ),
+                ),
+              ),
+      ),
+      // bottomNavigationBar: ,
     );
   }
 }

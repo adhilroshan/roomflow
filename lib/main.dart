@@ -3,14 +3,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:roomflow/demo.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:roomflow/screens/booking/booking_page.dart';
 import 'package:roomflow/screens/home_page.dart';
+import 'package:roomflow/screens/private_login.dart';
 import 'package:roomflow/screens/menu_page.dart';
 import 'package:roomflow/screens/rent_space/rent_space_page.dart';
 import 'package:roomflow/screens/zoom_home_page.dart';
-import 'package:roomflow/space_service.dart';
+// import 'package:roomflow/screens/login/login_page.dart';
+import 'package:roomflow/services/space_service.dart';
+import 'package:web3modal_flutter/web3modal_flutter.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: "lib/.env");
   runApp(ChangeNotifierProvider(
     create: (context) => SpaceServices(),
     child: const MyApp(),
@@ -23,26 +28,29 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'RoomFlow',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        // primaryColor: const Color(0xff374151),
-        fontFamily: GoogleFonts.robotoFlex().fontFamily,
-        colorSchemeSeed: const Color(0xFFFFBE79),
+    return Web3ModalTheme(
+      isDarkMode: true,
+      child: MaterialApp(
+        title: 'RoomFlow',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.light,
+          // primaryColor: const Color(0xff374151),
+          fontFamily: GoogleFonts.robotoFlex().fontFamily,
+          colorSchemeSeed: const Color(0xFFFFBE79),
+        ),
+        // darkTheme: ThemeData(
+        //   useMaterial3: true,
+        //   brightness: Brightness.dark,
+        //   canvasColor: const Color(0xFF374151),
+        //   fontFamily: GoogleFonts.robotoFlex().fontFamily,
+        //   colorSchemeSeed: const Color(0xFFFFBE79),
+        // ),
+        // themeMode: ThemeMode.dark,
+        home: MyHomePage(),
+        // home: Login(),
       ),
-      // darkTheme: ThemeData(
-      //   useMaterial3: true,
-      //   brightness: Brightness.dark,
-      //   canvasColor: const Color(0xFF374151),
-      //   fontFamily: GoogleFonts.robotoFlex().fontFamily,
-      //   colorSchemeSeed: const Color(0xFFFFBE79),
-      // ),
-      // themeMode: ThemeMode.dark,
-      // home: const MyHomePage(),
-      home: MyHomePage(),
     );
   }
 }
@@ -88,10 +96,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             switch (menu.navigationItem) {
               case NavigationItem.home:
                 return const HomePage();
-              case NavigationItem.bookmark:
-                return const Demo();
+              case NavigationItem.booking:
+                return const BookingPage();
               case NavigationItem.rentSpace:
                 return const RentSpace();
+              case NavigationItem.bookmark:
+                return const HomePage();
               default:
                 return const HomePage();
             }

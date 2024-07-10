@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roomflow/models/models.dart';
-import 'package:roomflow/space_service.dart';
+import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/utils/size_config.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
+// import 'package:intl/intl.dart';
+// import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+// import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 
-class ProductDetailPage extends StatelessWidget {
+class ProductDetailPage extends StatefulWidget {
   const ProductDetailPage({
     Key? key,
     required this.spaceId,
@@ -15,12 +18,25 @@ class ProductDetailPage extends StatelessWidget {
   final int spaceId;
 
   @override
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  // void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+  //   // TODO: implement your code here
+  //   var date= args.value;
+  //   // print(date);
+  // }
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     var spacesServices = context.watch<SpaceServices>();
-    Space space = spacesServices.spaces[spaceId];
-    var images = spacesServices.spaces[spaceId].images.split(',');
-
+    Space space = spacesServices.spaces[widget.spaceId];
+    var images = spacesServices.spaces[widget.spaceId].images.split(',');
+    double price = space.price.toDouble() ;
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
@@ -50,9 +66,9 @@ class ProductDetailPage extends StatelessWidget {
                     height: SizeConfig.blockSizeVertical! * 0.5,
                   ),
                   Text(
-                    '${space.price} / Day',
-                    style: kRalewayMedium.copyWith(
-                      color: kBlack,
+                    '${space.price} WEI / Day',
+                    style: kRalewayBold.copyWith(
+                      color: Color.fromARGB(255, 216, 148, 75),
                       fontSize: SizeConfig.blockSizeHorizontal! * 4,
                     ),
                   )
@@ -61,7 +77,182 @@ class ProductDetailPage extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                debugPrint('Rent Now Tapped');
+                // DateTime? startDate, endDate;
+                // showCustomDateRangePicker(
+                //   context,
+                //   dismissible: true,
+                //   minimumDate:
+                //       DateTime.now().subtract(const Duration(days: 30)),
+                //   maximumDate: DateTime.now().add(const Duration(days: 30)),
+                //   endDate: endDate,
+                //   startDate: startDate,
+                //   backgroundColor: kWhite,
+                //   primaryColor: Color.fromARGB(255, 216, 148, 75),
+                //   onApplyClick: (start, end) {
+                //     setState(() {
+                //       endDate = end;
+                //       startDate = start;
+                //     });
+                //     // int ab = endDate!.millisecondsSinceEpoch -
+                //     //     startDate!.millisecondsSinceEpoch;
+                //     // double b = ab / 86400000;
+                //     // print(
+                //     //     '\n\n-----------\n$endDate\n-------------\n\n');
+                //     // print('\n\n-----------\n$b\n-------------\n\n');
+                //      final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                //     // final String formatted = formatter.format(now);
+                //     print('\n\n-----------\nDate\n-------------\n\n');
+                //     print(
+                //         '\n\n-----------\n${startDate!.day}\n-------------\n\n');
+                //     spacesServices.bookSpace(
+                //       space.id,
+                //       BigInt.from(startDate!.day),
+                //       BigInt.from(
+                //         endDate!.day,
+                //       ),
+                //       space.price,
+                //     );
+                //     print('\n\n-----------\nDate\n-------------\n\n');
+                //   },
+                //   onCancelClick: () {
+                //     setState(() {
+                //       endDate = null;
+                //       startDate = null;
+                //     });
+                //   },
+                // );
+
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter setState) {
+                        return SizedBox(
+                          height: 280,
+                          width: MediaQuery.of(context).size.width,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 6),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Start Date',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    clipBehavior: Clip.antiAlias,
+                                    onPressed: () async {
+                                      DateTime? newDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: startDate,
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2100),
+                                      );
+
+                                      if (newDate == null) return;
+                                      setState(() {
+                                        startDate = newDate;
+                                      });
+                                      print(startDate.microsecondsSinceEpoch);
+                                    },
+                                    child: Text(
+                                      '${startDate.year}/${startDate.month}/${startDate.day}',
+                                      style: kRalewayMedium.copyWith(
+                                        color: kBlack,
+                                        fontSize:
+                                            SizeConfig.blockSizeHorizontal! * 4,
+                                      ),
+                                    )),
+                                const SizedBox(
+                                  height: kPadding24,
+                                ),
+                                Text(
+                                  'End Date',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    clipBehavior: Clip.antiAlias,
+                                    onPressed: () async {
+                                      DateTime? newDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: startDate,
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2100),
+                                      );
+
+                                      if (newDate == null) return;
+                                      setState(() {
+                                        endDate = newDate;
+                                        price = space.price.toDouble() * ((endDate.millisecondsSinceEpoch - startDate.millisecondsSinceEpoch) /86400000);
+                                      });
+                                      print(endDate.microsecondsSinceEpoch);
+                                      var date =
+                                          endDate.millisecondsSinceEpoch -
+                                              startDate.millisecondsSinceEpoch;
+                                      print(date / 86400000);
+                                    },
+                                    child: Text(
+                                      '${endDate.year}/${endDate.month}/${endDate.day}',
+                                      style: kRalewayMedium.copyWith(
+                                        color: kBlack,
+                                        fontSize:
+                                            SizeConfig.blockSizeHorizontal! * 4,
+                                      ),
+                                    )),
+                                const SizedBox(
+                                  height: kPadding24,
+                                ),
+                                Text(
+                                  'Total Price',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '${price} Wei',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: kPadding24,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Cancel"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        spacesServices.bookSpace(
+                                            space.id,
+                                            BigInt.from(startDate
+                                                .millisecondsSinceEpoch),
+                                            BigInt.from(
+                                                endDate.millisecondsSinceEpoch),
+                                            space.price);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Confirm"),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                    });
               },
               child: Container(
                 height: 43,
@@ -92,6 +283,7 @@ class ProductDetailPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: kPadding20,
+            vertical: kPadding20,
           ),
           child: Column(
             children: [
@@ -164,7 +356,7 @@ class ProductDetailPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                space.name,
+                                space.title,
                                 style: kRalewaySemibold.copyWith(
                                   color: kWhite,
                                   fontSize:
@@ -175,7 +367,7 @@ class ProductDetailPage extends StatelessWidget {
                                 height: SizeConfig.blockSizeVertical! * 0.5,
                               ),
                               Text(
-                                space.description,
+                                space.subtitle,
                                 style: kRalewayRegular.copyWith(
                                   color: kWhite,
                                   fontSize: SizeConfig.blockSizeHorizontal! * 3,

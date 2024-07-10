@@ -12,7 +12,8 @@
 
         struct SpaceListing {
             uint id;
-            string name;
+            string title;
+            string subtitle;
             string description;
             string images;
             uint rooms;
@@ -89,22 +90,25 @@
         }
 
         function createSpace(
-            string memory name,
+            string memory title,
+            string memory subtitle,
             string memory description,
             string memory images,
             uint rooms,
             uint price
         ) public {
-            require(bytes(name).length > 0, "Name cannot be empty");
+            require(bytes(title).length > 0, "title cannot be empty");
+            require(bytes(subtitle).length > 0, "title cannot be empty");
             require(bytes(description).length > 0, "Description cannot be empty");
             require(bytes(images).length > 0, "Images cannot be empty");
             require(rooms > 0, "Rooms cannot be zero");
-            require(price > 0 ether, "Price cannot be zero");
+            require(price > 0 wei, "Price cannot be zero");
 
             _totalSpaces.increment();
             SpaceListing memory space;
             space.id = _totalSpaces.current();
-            space.name = name;
+            space.title = title;
+            space.subtitle = subtitle;
             space.description = description;
             space.images = images;
             space.rooms = rooms;
@@ -120,7 +124,8 @@
 
         function updateSpace(
             uint id,
-            string memory name,
+            string memory title,
+            string memory subtitle,
             string memory description,
             string memory images,
             uint rooms,
@@ -131,14 +136,16 @@
                 msg.sender == spaces[id].owner,
                 "Unauthorized personnel, owner only"
             );
-            require(bytes(name).length > 0, "Name cannot be empty");
+            require(bytes(title).length > 0, "title cannot be empty");
+            require(bytes(subtitle).length > 0, "title cannot be empty");
             require(bytes(description).length > 0, "Description cannot be empty");
             require(bytes(images).length > 0, "Images cannot be empty");
             require(rooms > 0, "Rooms cannot be zero");
-            require(price > 0 ether, "Price cannot be zero");
+            require(price > 0 wei, "Price cannot be zero");
 
             SpaceListing memory space = spaces[id];
-            space.name = name;
+            space.title = title;
+            space.subtitle = subtitle;
             space.description = description;
             space.images = images;
             space.rooms = rooms;
@@ -186,15 +193,17 @@
             uint endDate
         ) public payable nonReentrant {
             require(spaceExists[id], "Space not available");
-            require(
-                msg.value >=
-                    spaces[id].price * (endDate - startDate + 1) + securityFee,
-                "Insufficient fund"
-            );
+            // require(
+            //     msg.value >=
+            //         spaces[id].price * (endDate - startDate + 1) + securityFee,
+            //     "Insufficient fund"
+            // );
             require(
                 isDateCleared(id, startDate, endDate),
                 "Booked date found among dates"
             );
+            
+            uint day= (endDate - startDate) /86400000;
 
             for (uint i = startDate; i <= endDate; i++) {
                 Booking memory booking;
@@ -202,7 +211,7 @@
                 booking.tenant = msg.sender;
                 booking.startDate = startDate;
                 booking.endDate = endDate;
-                booking.totalPrice = spaces[id].price * (endDate - startDate + 1);
+                booking.totalPrice = spaces[id].price * (day + 1);
                 bookingsOf[id].push(booking);
                 isDateBooked[id][i] = true;
                 bookedDates[id].push(i);

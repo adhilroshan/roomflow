@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:roomflow/space_service.dart';
+import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/app_styles.dart';
 import 'package:roomflow/utils/size_config.dart';
 // import 'package:roomflow/screens/product_detail_page.dart';
@@ -133,6 +133,7 @@ class _HomePageState extends State<HomePage> {
                   spacesServices.fetchSpaces();
                 },
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
                       const LocationPicker(),
@@ -199,8 +200,18 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      NearFromYou(spacesServices: spacesServices),
-                      BestForYou(spacesServices: spacesServices),
+                      spacesServices.spaces.isEmpty
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Text(
+                                "No spaces available",
+                                style: kRalewayRegular,
+                              ),
+                            )
+                          : NearFromYou(spacesServices: spacesServices),
+                      spacesServices.spaces.isEmpty
+                          ? const SizedBox()
+                          : BestForYou(spacesServices: spacesServices),
                     ],
                   ),
                 ),
