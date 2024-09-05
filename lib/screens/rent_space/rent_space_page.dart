@@ -5,6 +5,7 @@ import 'package:roomflow/screens/widgets/widgets.dart';
 import 'package:roomflow/services/space_service.dart';
 import 'package:roomflow/utils/size_config.dart';
 import 'widgets/widgets.dart';
+import 'form_page.dart';
 
 class RentSpace extends StatefulWidget {
   const RentSpace({super.key});
@@ -37,15 +38,21 @@ class _RentSpaceState extends State<RentSpace> {
     List<Space> spaces = [];
     var spacesServices = context.watch<SpaceServices>();
     for (var i = 0; i < spacesServices.spaces.length; i++) {
-      if (spacesServices.spaces[i].owner == spacesServices.creds.address) {
+      if (spacesServices.spaces[i].owner == spacesServices.walletAddress) {
         spaces.add(spacesServices.spaces[i]);
       }
+
     }
     SizeConfig().init(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => FormPage()),
+          );
+        
+          /* showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
@@ -102,7 +109,7 @@ class _RentSpaceState extends State<RentSpace> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      spacesServices.createSpace(
+                       spacesServices.createSpace(
                           titleController.text,
                           subtitleController.text,
                           descriptionController.text,
@@ -117,6 +124,7 @@ class _RentSpaceState extends State<RentSpace> {
               );
             },
           );
+           */
           // spacesServices.createSpace(name, description, images, rooms, price)
         },
         child: const Icon(Icons.add),

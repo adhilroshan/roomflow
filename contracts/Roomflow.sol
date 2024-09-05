@@ -45,7 +45,7 @@
 
         // event SecurityFeeUpdated(uint newFee);
 
-        event SpaceListed(uint indexed id, address indexed owner);
+        event SpaceListed(uint id, address indexed owner);
         event SpaceUpdated(uint indexed id, address indexed owner);
         event SpaceDeleted(uint indexed id, address indexed owner);
         event SpaceBooked(

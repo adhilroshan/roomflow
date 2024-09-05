@@ -10,9 +10,9 @@ import 'package:roomflow/screens/private_login.dart';
 import 'package:roomflow/screens/menu_page.dart';
 import 'package:roomflow/screens/rent_space/rent_space_page.dart';
 import 'package:roomflow/screens/zoom_home_page.dart';
-// import 'package:roomflow/screens/login/login_page.dart';
 import 'package:roomflow/services/space_service.dart';
 import 'package:web3modal_flutter/web3modal_flutter.dart';
+// import 'package:roomflow/screens/login/login_page.dart';
 
 void main() async {
   await dotenv.load(fileName: "lib/.env");
@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var spacesServices = context.watch<SpaceServices>();
     return Web3ModalTheme(
       isDarkMode: true,
       child: MaterialApp(
@@ -48,8 +49,8 @@ class MyApp extends StatelessWidget {
         //   colorSchemeSeed: const Color(0xFFFFBE79),
         // ),
         // themeMode: ThemeMode.dark,
-        home: MyHomePage(),
-        // home: Login(),
+        // home:spacesServices.isConnected?  MyHomePage() :Login(),
+        home: Login(),
       ),
     );
   }

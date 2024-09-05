@@ -42,7 +42,7 @@
  */
 
 require('dotenv').config();
-const { MUMBAI_RPC_URL, PRIVATE_KEY, ETHERSCAN_API_KEY, GOERLI_RPC_URL } = process.env;
+const { MUMBAI_RPC_URL, PRIVATE_KEY, ETHERSCAN_API_KEY, GOERLI_RPC_URL, SEPOLIA_RPC_URL } = process.env;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
@@ -85,6 +85,15 @@ module.exports = {
         return new HDWalletProvider(PRIVATE_KEY, MUMBAI_RPC_URL);
       },
       network_id: '80001',
+    },
+
+    sepolia: {
+      provider: () => new HDWalletProvider(PRIVATE_KEY, SEPOLIA_RPC_URL),
+      network_id: 11155111, // Sepolia's network id
+      gas: 5000000, // Gas limit
+      confirmations: 1, // # of confirmations to wait between deployments. (default: 0)
+      timeoutBlocks: 200, // # of blocks before a deployment times out (minimum/default: 50)
+      skipDryRun: true // Skip dry run before migrations? (default: false for public nets)
     },
 
 
